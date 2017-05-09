@@ -32,9 +32,11 @@ router.get('/dashboard', function (req, res, next) {
          }
 
          console.log("Total price updated to " + totalPrice);
+         console.log("Length of logbook is " + user.log_book.length);
          res.render('dashboard', {
             grocery_list: user.grocery_list,
-            totalPrice: totalPrice
+            totalPrice: totalPrice,
+            logbook: user.log_book,
          });
       })();
    } else {
@@ -50,6 +52,9 @@ router.get('/Login', function (req, res, next) {
 });
 router.get('/table', function (req, res, next) {
    res.render('table');
+});
+router.get('/logbook', function (req, res, next) {
+   res.render('logbook');
 });
 
 //  Only for dev purposes!
