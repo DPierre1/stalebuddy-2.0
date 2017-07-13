@@ -31,7 +31,7 @@ router.get('/dashboard', function (req, res, next) {
             totalPrice += Number(user.grocery_list[i].price);
          }
 
-         console.log("Total price updated to " + totalPrice);
+         console.log("Total price updated to $" + totalPrice.toFixed(2));
          console.log("Length of logbook is " + user.log_book.length);
          res.render('dashboard', {
             grocery_list: user.grocery_list,
@@ -154,6 +154,37 @@ router.post("/addItem", function (req, res, next) {
                _id: ObjectId(req.cookies.accountnum)
             }, user, cb);
          };
+         res.end("OK");
+      }
+   })();
+});
+
+router.post("/addItemLogBook", function (req, res, next) {
+   Promise.coroutine(function* () {
+      yield db.connect();
+      //  Get current user with the id equal to the cookie accountNum
+      var user = (yield(cb) => {
+         db.Users.find({
+            _id: ObjectId(req.cookies.accountnum)
+         }).toArray(cb);
+      })[0];
+      var exists = false;
+      for (var i = 0; i < user.log_book.length; i++) {
+         if (JSON.stringify(user.log_book[i]) === JSON.stringify(req.body)) {
+            exists = true;
+            break;
+         }
+      }
+      if (!exists) {
+         //  Add the item to the variable above.
+         user.log_book.push(req.body);
+         //  Re-store that variable back in the database.
+         yield(cb) => {
+            db.Users.update({
+               _id: ObjectId(req.cookies.accountnum)
+            }, user, cb);
+         };
+         console.log("Exited successfully");
          res.end("OK");
       }
    })();
